@@ -1,0 +1,21 @@
+{
+    "overall": "operational",
+    "services": [
+        {
+            "name": "API Service",
+            "operational": true,
+            "responseTime": 50
+        },
+        {
+            "name": "Database",
+            "operational": true,
+            "responseTime": 30
+        },
+        {
+            "name": "Web Application",
+            "operational": true,
+            "responseTime": 100
+        }
+    ],
+    "lastUpdated": "2024-01-20T10:00:00.000Z"
+}

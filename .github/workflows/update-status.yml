@@ -1,0 +1,83 @@
+# .github/workflows/update-status.yml
+name: Update Status Page
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Every 5 minutes
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create status directory
+        run: mkdir -p docs/status-data
+
+      - name: Check API Health
+        run: |
+          echo "Checking API health..."
+          
+          # Check main API endpoint
+          API_START=$(date +%s%3N)
+          if curl -f -s --max-time 10 https://app.pavus.ai/api/v2/healthcheck > /dev/null; then
+            API_END=$(date +%s%3N)
+            API_TIME=$((API_END - API_START))
+            API_STATUS='{"name": "API Service", "operational": true, "responseTime": '$API_TIME'}'
+          else
+            API_STATUS='{"name": "API Service", "operational": false, "responseTime": null}'
+          fi
+          
+          # Check database health
+          DB_START=$(date +%s%3N)
+          if curl -f -s --max-time 10 https://app.pavus.ai/api/v2/readiness > /dev/null; then
+            DB_END=$(date +%s%3N)
+            DB_TIME=$((DB_END - DB_START))
+            DB_STATUS='{"name": "Database", "operational": true, "responseTime": '$DB_TIME'}'
+          else
+            DB_STATUS='{"name": "Database", "operational": false, "responseTime": null}'
+          fi
+          
+          # Check frontend
+          WEB_START=$(date +%s%3N)
+          if curl -f -s --max-time 10 https://app.pavus.ai > /dev/null; then
+            WEB_END=$(date +%s%3N)
+            WEB_TIME=$((WEB_END - WEB_START))
+            WEB_STATUS='{"name": "Web Application", "operational": true, "responseTime": '$WEB_TIME'}'
+          else
+            WEB_STATUS='{"name": "Web Application", "operational": false, "responseTime": null}'
+          fi
+          
+          # Combine results
+          SERVICES="[$API_STATUS, $DB_STATUS, $WEB_STATUS]"
+          
+          # Determine overall status
+          if echo "$SERVICES" | grep -q '"operational": false'; then
+            OVERALL="degraded"
+          else
+            OVERALL="operational"
+          fi
+          
+          # Create status JSON
+          cat > docs/status-data/current-status.json << EOF
+          {
+            "overall": "$OVERALL",
+            "services": $SERVICES,
+            "lastUpdated": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+          }
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'Status Bot'
+          git config --global user.email 'status-bot@users.noreply.github.com'
+          git add docs/status-data/current-status.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update status page $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
