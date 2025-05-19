@@ -1,21 +1,5 @@
 {
-    "overall": "operational",
-    "services": [
-        {
-            "name": "API Service",
-            "operational": true,
-            "responseTime": 50
-        },
-        {
-            "name": "Database",
-            "operational": true,
-            "responseTime": 30
-        },
-        {
-            "name": "Web Application",
-            "operational": true,
-            "responseTime": 100
-        }
-    ],
-    "lastUpdated": "2024-01-20T10:00:00.000Z"
+  "overall": "operational",
+  "services": [{"name": "API Service", "operational": true, "responseTime": 452}, {"name": "Database", "operational": true, "responseTime": 332}, {"name": "Web Application", "operational": true, "responseTime": 322}],
+  "lastUpdated": "2025-05-19T19:25:56.315Z"
 }
