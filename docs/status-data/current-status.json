@@ -1,5 +1,5 @@
 {
   "overall": "operational",
-  "services": [{"name": "API Service", "operational": true, "responseTime": 334}, {"name": "Database", "operational": true, "responseTime": 147}, {"name": "Web Application", "operational": true, "responseTime": 180}],
-  "lastUpdated": "2026-10-29T09:53:33.552Z"
+  "services": [{"name": "API Service", "operational": true, "responseTime": 824}, {"name": "Database", "operational": true, "responseTime": -325}, {"name": "Web Application", "operational": true, "responseTime": 199}],
+  "lastUpdated": "2026-10-29T09:59:51.478Z"
 }
